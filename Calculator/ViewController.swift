@@ -12,6 +12,7 @@ class ViewController: UIViewController
 {
 
     @IBOutlet weak var display: UILabel!
+    @IBOutlet weak var history: UILabel!
     
     var isTyping = false
     
@@ -30,12 +31,18 @@ class ViewController: UIViewController
         if isTyping {
             enter()
         }
+        history.text = history.text! + ", " + operation
         switch operation {
         case "+": performOperation { $1 + $0 }
         case "−": performOperation { $1 - $0 }
         case "×": performOperation { $1 * $0 }
         case "÷": performOperation { $1 / $0 }
         case "√": performOperation { sqrt($0) }
+        case "sin": performOperation { sin($0) }
+        case "cos": performOperation { cos($0) }
+        case "π":
+            operandStack.append(M_PI)
+            displayValue = M_PI
         default: break
         }
     }
@@ -60,7 +67,23 @@ class ViewController: UIViewController
     @IBAction func enter() {
         isTyping = false
         operandStack.append(displayValue)
+        history.text = history.text! + ", " + String(displayValue)
         print("operand stack = \(operandStack)")
+    }
+    
+    @IBAction func point() {
+        if !isTyping {
+            display.text = "0."
+            isTyping = true
+        } else if !display.text!.containsString(".") {
+            display.text = display.text! + "."
+        }
+    }
+    
+    @IBAction func clear() {
+        history.text = ""
+        display.text = "0"
+        operandStack.removeAll()
     }
     
     var displayValue: Double {
