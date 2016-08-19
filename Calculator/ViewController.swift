@@ -10,13 +10,14 @@ import UIKit
 
 class ViewController: UIViewController
 {
-
-    @IBOutlet weak var display: UILabel!
-    @IBOutlet weak var history: UILabel!
     
-    var isTyping = false
+    @IBOutlet private weak var display: UILabel!
+    @IBOutlet private weak var history: UILabel!
     
-    @IBAction func appendDigit(sender: UIButton) {
+    private let brain = CalculatorBrain()
+    private var isTyping = false
+    
+    @IBAction private func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if isTyping {
             display.text = display.text! + digit
@@ -26,52 +27,18 @@ class ViewController: UIViewController
         }
     }
     
-    @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
+    @IBAction private func operate(sender: UIButton) {
         if isTyping {
-            enter()
+            brain.setOperand(displayValue)
+            isTyping = false
         }
-        history.text = history.text! + ", " + operation
-        switch operation {
-        case "+": performOperation { $1 + $0 }
-        case "−": performOperation { $1 - $0 }
-        case "×": performOperation { $1 * $0 }
-        case "÷": performOperation { $1 / $0 }
-        case "√": performOperation { sqrt($0) }
-        case "sin": performOperation { sin($0) }
-        case "cos": performOperation { cos($0) }
-        case "π":
-            operandStack.append(M_PI)
-            displayValue = M_PI
-        default: break
+        if let symbol = sender.currentTitle {
+            brain.performOperation(symbol)
         }
+        displayValue = brain.result
     }
     
-    func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    @objc(performOperationSingle:)
-    func performOperation(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    var operandStack = Array<Double>()
-    
-    @IBAction func enter() {
-        isTyping = false
-        operandStack.append(displayValue)
-        history.text = history.text! + ", " + String(displayValue)
-        print("operand stack = \(operandStack)")
-    }
-    
-    @IBAction func point() {
+    @IBAction private func point() {
         if !isTyping {
             display.text = "0."
             isTyping = true
@@ -80,19 +47,17 @@ class ViewController: UIViewController
         }
     }
     
-    @IBAction func clear() {
+    @IBAction private func clear() {
         history.text = ""
         display.text = "0"
-        operandStack.removeAll()
     }
     
-    var displayValue: Double {
+    private var displayValue: Double {
         get {
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            return Double(display.text!)!
         }
         set {
-            display.text = "\(newValue)"
-            isTyping = false
+            display.text = String(newValue)
         }
     }
 }
