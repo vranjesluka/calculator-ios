@@ -50,6 +50,7 @@ class ViewController: UIViewController
     @IBAction private func clear() {
         history.text = ""
         display.text = "0"
+        brain.performOperation("C")
     }
     
     private var displayValue: Double {

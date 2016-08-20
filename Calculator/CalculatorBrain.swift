@@ -15,6 +15,7 @@ class CalculatorBrain
         case UnaryOperation(Double -> Double)
         case BinaryOperation((Double, Double) -> Double)
         case Equals
+        case Clear
     }
     
     private let knownOperations = [
@@ -24,11 +25,14 @@ class CalculatorBrain
         "÷" : Operation.BinaryOperation(/),
         "√" : Operation.UnaryOperation(sqrt),
         "sin" : Operation.UnaryOperation(sin),
-        "cos" : Operation.UnaryOperation() { -$0 },
-        "±" : Operation.UnaryOperation(cos),
+        "cos" : Operation.UnaryOperation(cos),
+        "tg" : Operation.UnaryOperation(tan),
+        "ctg" : Operation.UnaryOperation() {1 / tan($0)},
+        "±" : Operation.UnaryOperation() { -$0 },
         "π" : Operation.Operand(M_PI),
         "e" : Operation.Operand(M_E),
-        "=" : Operation.Equals
+        "=" : Operation.Equals,
+        "C" : Operation.Clear
     ]
     
     private var accumulator = 0.0
@@ -54,8 +58,10 @@ class CalculatorBrain
             case .BinaryOperation(let operation):
                 executePendginBinaryOperation()
                 pending = (operation, accumulator)
-            case .Equals():
+            case .Equals:
                 executePendginBinaryOperation()
+            case .Clear:
+                clear()
             }
         }
     }
@@ -65,5 +71,10 @@ class CalculatorBrain
             accumulator = pending!.binaryFunction(pending!.firstOperand, accumulator)
             pending = nil
         }
+    }
+    
+    private func clear() {
+        accumulator = 0
+        pending = nil
     }
 }
