@@ -38,6 +38,18 @@ class CalculatorBrain
     private var accumulator = 0.0
     private var pending : (binaryFunction: (Double, Double) -> Double, firstOperand: Double)?
     
+    var description: String {
+        get {
+            return " "
+        }
+    }
+    
+    var isPartialResult: Bool {
+        get {
+            return pending != nil
+        }
+    }
+    
     var result: Double {
         get {
             return accumulator

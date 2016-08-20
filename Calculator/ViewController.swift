@@ -47,10 +47,13 @@ class ViewController: UIViewController
         }
     }
     
-    @IBAction private func clear() {
-        history.text = ""
+    @IBAction private func clearAndPerformOperation(sender: UIButton) {
+        history.text = " "
         display.text = "0"
-        brain.performOperation("C")
+        isTyping = false
+        if let symbol = sender.currentTitle {
+            brain.performOperation(symbol)
+        }
     }
     
     private var displayValue: Double {
