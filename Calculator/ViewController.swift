@@ -11,13 +11,13 @@ import UIKit
 class ViewController: UIViewController
 {
     
-    @IBOutlet private weak var display: UILabel!
-    @IBOutlet private weak var history: UILabel!
+    @IBOutlet fileprivate weak var display: UILabel!
+    @IBOutlet fileprivate weak var history: UILabel!
     
-    private let brain = CalculatorBrain()
-    private var isTyping = false
+    fileprivate let brain = CalculatorBrain()
+    fileprivate var isTyping = false
     
-    @IBAction private func appendDigit(sender: UIButton) {
+    @IBAction fileprivate func appendDigit(_ sender: UIButton) {
         let digit = sender.currentTitle!
         if isTyping {
             display.text = display.text! + digit
@@ -27,7 +27,7 @@ class ViewController: UIViewController
         }
     }
     
-    @IBAction private func operate(sender: UIButton) {
+    @IBAction fileprivate func operate(_ sender: UIButton) {
         if isTyping {
             brain.setOperand(displayValue)
             isTyping = false
@@ -38,16 +38,16 @@ class ViewController: UIViewController
         displayValue = brain.result
     }
     
-    @IBAction private func point() {
+    @IBAction fileprivate func point() {
         if !isTyping {
             display.text = "0."
             isTyping = true
-        } else if !display.text!.containsString(".") {
+        } else if !display.text!.contains(".") {
             display.text = display.text! + "."
         }
     }
     
-    @IBAction private func clearAndPerformOperation(sender: UIButton) {
+    @IBAction fileprivate func clearAndPerformOperation(_ sender: UIButton) {
         history.text = " "
         display.text = "0"
         isTyping = false
@@ -56,7 +56,7 @@ class ViewController: UIViewController
         }
     }
     
-    private var displayValue: Double {
+    fileprivate var displayValue: Double {
         get {
             return Double(display.text!)!
         }

@@ -10,33 +10,33 @@ import Foundation
 
 class CalculatorBrain
 {
-    private enum Operation {
-        case Operand(Double)
-        case UnaryOperation(Double -> Double)
-        case BinaryOperation((Double, Double) -> Double)
-        case Equals
-        case Clear
+    fileprivate enum Operation {
+        case operand(Double)
+        case unaryOperation((Double) -> Double)
+        case binaryOperation((Double, Double) -> Double)
+        case equals
+        case clear
     }
     
-    private let knownOperations = [
-        "+" : Operation.BinaryOperation(+),
-        "−" : Operation.BinaryOperation(-),
-        "×" : Operation.BinaryOperation(*),
-        "÷" : Operation.BinaryOperation(/),
-        "√" : Operation.UnaryOperation(sqrt),
-        "sin" : Operation.UnaryOperation(sin),
-        "cos" : Operation.UnaryOperation(cos),
-        "tg" : Operation.UnaryOperation(tan),
-        "ctg" : Operation.UnaryOperation() {1 / tan($0)},
-        "±" : Operation.UnaryOperation() { -$0 },
-        "π" : Operation.Operand(M_PI),
-        "e" : Operation.Operand(M_E),
-        "=" : Operation.Equals,
-        "C" : Operation.Clear
+    fileprivate let knownOperations = [
+        "+" : Operation.binaryOperation(+),
+        "−" : Operation.binaryOperation(-),
+        "×" : Operation.binaryOperation(*),
+        "÷" : Operation.binaryOperation(/),
+        "√" : Operation.unaryOperation(sqrt),
+        "sin" : Operation.unaryOperation(sin),
+        "cos" : Operation.unaryOperation(cos),
+        "tg" : Operation.unaryOperation(tan),
+        "ctg" : Operation.unaryOperation() {1 / tan($0)},
+        "±" : Operation.unaryOperation() { -$0 },
+        "π" : Operation.operand(M_PI),
+        "e" : Operation.operand(M_E),
+        "=" : Operation.equals,
+        "C" : Operation.clear
     ]
     
-    private var accumulator = 0.0
-    private var pending : (binaryFunction: (Double, Double) -> Double, firstOperand: Double)?
+    fileprivate var accumulator = 0.0
+    fileprivate var pending : (binaryFunction: (Double, Double) -> Double, firstOperand: Double)?
     
     var description: String {
         get {
@@ -56,36 +56,36 @@ class CalculatorBrain
         }
     }
     
-    func setOperand(operand: Double) {
+    func setOperand(_ operand: Double) {
         accumulator = operand
     }
     
-    func performOperation(symbol: String) {
+    func performOperation(_ symbol: String) {
         if let operation = knownOperations[symbol] {
             switch operation {
-            case .Operand(let value):
+            case .operand(let value):
                 accumulator = value
-            case .UnaryOperation(let operation):
+            case .unaryOperation(let operation):
                 accumulator = operation(accumulator)
-            case .BinaryOperation(let operation):
+            case .binaryOperation(let operation):
                 executePendginBinaryOperation()
                 pending = (operation, accumulator)
-            case .Equals:
+            case .equals:
                 executePendginBinaryOperation()
-            case .Clear:
+            case .clear:
                 clear()
             }
         }
     }
     
-    private func executePendginBinaryOperation() {
+    fileprivate func executePendginBinaryOperation() {
         if pending != nil {
             accumulator = pending!.binaryFunction(pending!.firstOperand, accumulator)
             pending = nil
         }
     }
     
-    private func clear() {
+    fileprivate func clear() {
         accumulator = 0
         pending = nil
     }
